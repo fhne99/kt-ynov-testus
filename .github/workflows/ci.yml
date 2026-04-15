@@ -51,3 +51,6 @@ jobs:
 
       - name: Run mutation tests
         run: ./gradlew pitest
+
+      - name: Run integration tests
+        run: ./gradlew testIntegration
