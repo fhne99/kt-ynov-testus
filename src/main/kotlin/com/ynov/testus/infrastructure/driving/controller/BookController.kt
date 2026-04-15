@@ -24,4 +24,10 @@ class BookController(private val bookUseCase: BookUseCase) {
     fun handleIllegalArgument(e: IllegalArgumentException): Map<String, String> {
         return mapOf("error" to (e.message ?: "Bad request"))
     }
+
+    @ExceptionHandler(RuntimeException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleRuntimeException(e: RuntimeException): Map<String, String> {
+        return mapOf("error" to (e.message ?: "Internal server error"))
+    }
 }
