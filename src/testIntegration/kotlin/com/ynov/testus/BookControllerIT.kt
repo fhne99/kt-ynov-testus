@@ -40,6 +40,7 @@ class BookControllerIT(
                         """.trimIndent())
                     }
                 }
+            verify { bookUseCase.getAllBooks() }
         }
 
         it("retourne une liste vide si aucun livre") {
@@ -76,6 +77,17 @@ class BookControllerIT(
                 content = """{"title": "", "author": "Robert Martin"}"""
             }.andExpect {
                 status { isBadRequest() }
+            }
+        }
+
+        it("retourne 500 si le domaine lance une exception inattendue") {
+            every { bookUseCase.addBook(any(), any()) } throws RuntimeException("Erreur inattendue")
+
+            mockMvc.post("/books") {
+                contentType = MediaType.APPLICATION_JSON
+                content = """{"title": "Clean Code", "author": "Robert Martin"}"""
+            }.andExpect {
+                status { is5xxServerError() }
             }
         }
     }
