@@ -88,7 +88,7 @@ tasks.jacocoTestReport {
 }
 
 pitest {
-    targetClasses.set(listOf("com.ynov.testus.*"))
+    targetClasses.set(listOf("com.ynov.testus.domain.*"))
     targetTests.set(listOf("com.ynov.testus.*"))
     outputFormats.set(listOf("HTML", "XML"))
     mutationThreshold.set(80)
