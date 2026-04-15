@@ -48,3 +48,6 @@ jobs:
         if: always()
         with:
           files: build/test-results/**/*.xml
+
+      - name: Run mutation tests
+        run: ./gradlew pitest
