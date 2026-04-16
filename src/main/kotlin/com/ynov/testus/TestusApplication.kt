@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class TestusApplication
 
 fun main(args: Array<String>) {
-	runApplication<TestusApplication>(*args)
+    runApplication<TestusApplication>(*args)
 }

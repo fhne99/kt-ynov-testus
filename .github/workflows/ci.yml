@@ -60,3 +60,6 @@ jobs:
 
       - name: Run architecture tests
         run: ./gradlew testArchitecture
+
+      - name: Run Detekt
+        run: ./gradlew detekt
