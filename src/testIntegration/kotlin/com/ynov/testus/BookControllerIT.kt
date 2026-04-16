@@ -13,7 +13,13 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
-@WebMvcTest(BookController::class)
+@WebMvcTest(
+    controllers = [BookController::class],
+    excludeAutoConfiguration = [
+        org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration::class,
+        org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration::class
+    ]
+)
 class BookControllerIT(
     private val mockMvc: MockMvc,
     @MockkBean val bookUseCase: BookUseCase

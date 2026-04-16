@@ -27,16 +27,15 @@ testing {
                 kotlin {
                     setSrcDirs(listOf("src/testIntegration/kotlin"))
                 }
-            }
-            targets {
-                all {
-                    testTask.configure {
-                        classpath += sourceSets.main.get().output
-                    }
-                }
+                compileClasspath += sourceSets.main.get().output
+                runtimeClasspath += sourceSets.main.get().output
             }
         }
     }
+}
+
+val testIntegrationImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
 }
 
 dependencies {
@@ -59,7 +58,16 @@ dependencies {
         exclude(module = "mockito-core")
     }
     "testIntegrationImplementation"("org.springframework.boot:spring-boot-starter-web")
-    "testIntegrationImplementation"(sourceSets.main.get().output)
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    "testIntegrationImplementation"("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.liquibase:liquibase-core")
+    implementation("org.postgresql:postgresql")
+    "testIntegrationImplementation"("org.testcontainers:postgresql:1.19.1")
+    "testIntegrationImplementation"("org.testcontainers:jdbc-test:1.12.0")
+    "testIntegrationImplementation"("org.testcontainers:junit-jupiter:1.19.1")
+    "testIntegrationImplementation"("org.testcontainers:testcontainers:1.19.1")
+    "testIntegrationImplementation"("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
+    "testIntegrationImplementation"("org.postgresql:postgresql")
 }
 
 kotlin {
