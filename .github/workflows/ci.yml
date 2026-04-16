@@ -57,3 +57,6 @@ jobs:
 
       - name: Run component tests
         run: ./gradlew testComponent
+
+      - name: Run architecture tests
+        run: ./gradlew testArchitecture
