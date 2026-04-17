@@ -31,10 +31,10 @@ class BookDAOIT(
 
         test("get all books from db") {
             performQuery("""
-                INSERT INTO book (title, author)
+                INSERT INTO book (title, author, reserved)
                 VALUES 
-                    ('Clean Code', 'Robert Martin'),
-                    ('Kotlin in Action', 'Jemerov')
+                    ('Clean Code', 'Robert Martin', false),
+                    ('Kotlin in Action', 'Jemerov', false)
             """.trimIndent())
 
             val res = bookDAO.findAll()
@@ -51,14 +51,48 @@ class BookDAOIT(
             val res = performQuery("SELECT * FROM book")
             res shouldHaveSize 1
             assertSoftly(res.first()) {
+                this["id"].shouldNotBeNull().shouldBeInstanceOf<Int>()
                 this["title"].shouldBe("Les misérables")
                 this["author"].shouldBe("Victor Hugo")
+                this["reserved"].shouldBe(false)
             }
         }
 
         test("findAll retourne une liste vide si aucun livre") {
-            val res = bookDAO.findAll()
-            res shouldHaveSize 0
+            bookDAO.findAll() shouldHaveSize 0
+        }
+
+        test("reserve book in db") {
+            performQuery("""
+                INSERT INTO book (title, author, reserved)
+                VALUES ('Clean Code', 'Robert Martin', false)
+            """.trimIndent())
+
+            bookDAO.reserve("Clean Code")
+
+            val res = performQuery("SELECT * FROM book WHERE title = 'Clean Code'")
+            res shouldHaveSize 1
+            res.first()["reserved"].shouldBe(true)
+        }
+
+        test("find book by title") {
+            performQuery("""
+                INSERT INTO book (title, author, reserved)
+                VALUES ('Clean Code', 'Robert Martin', false)
+            """.trimIndent())
+
+            val book = bookDAO.findByTitle("Clean Code")
+
+            assertSoftly(book!!) {
+                title shouldBe "Clean Code"
+                author shouldBe "Robert Martin"
+                reserved shouldBe false
+            }
+        }
+
+        test("find book by title returns null if not found") {
+            val book = bookDAO.findByTitle("Inconnu")
+            book shouldBe null
         }
 
         afterSpec {

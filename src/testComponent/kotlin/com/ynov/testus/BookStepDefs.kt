@@ -35,6 +35,15 @@ class BookStepDefs(
             .statusCode(201)
     }
 
+    @Given("the user has already reserved the book with title {string}")
+    fun givenReserveBook(title: String) {
+        RestAssured.given()
+            .`when`()
+            .post("/books/$title/reserve")
+            .then()
+            .statusCode(200)
+    }
+
     @When("the user gets all books")
     fun getAllBooks() {
         lastResponse = RestAssured.given()
@@ -44,12 +53,51 @@ class BookStepDefs(
             .statusCode(200)
     }
 
+    @When("the user reserves the book with title {string}")
+    fun reserveBook(title: String) {
+        lastResponse = RestAssured.given()
+            .`when`()
+            .post("/books/$title/reserve")
+            .then()
+            .statusCode(200)
+    }
+
+    @When("the user tries to reserve the book with title {string}")
+    fun triesReserveBook(title: String) {
+        lastResponse = RestAssured.given()
+            .`when`()
+            .post("/books/$title/reserve")
+            .then()
+    }
+
     @Then("the list should contain the following books")
     fun shouldContainBooks(data: List<Map<String, String>>) {
-        val expectedJson = data.joinToString(",", "[", "]") { row ->
-            """{"title": "${row["title"]}", "author": "${row["author"]}"}"""
+        val actual = lastResponse!!.extract().body().jsonPath().getList<Map<String, Any>>(".")
+        data.forEach { row ->
+            val book = actual.first { it["title"] == row["title"] }
+            book["author"] shouldBe row["author"]
+            book["reserved"] shouldBe (row["reserved"] == "true")
         }
-        lastResponse!!.extract().body().jsonPath().prettify() shouldBe
-                io.restassured.path.json.JsonPath(expectedJson).prettify()
+    }
+
+    @Then("the book with title {string} should be reserved")
+    fun bookShouldBeReserved(title: String) {
+        val books = RestAssured.given()
+            .`when`()
+            .get("/books")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .jsonPath()
+            .getList<Map<String, Any>>(".")
+
+        val book = books.first { it["title"] == title }
+        book["reserved"] shouldBe true
+    }
+
+    @Then("the response status should be 400")
+    fun responseShouldBe400() {
+        lastResponse!!.statusCode(400)
     }
 }

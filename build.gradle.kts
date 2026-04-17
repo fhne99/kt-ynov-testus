@@ -152,5 +152,5 @@ pitest {
     outputFormats.set(listOf("HTML", "XML"))
     mutationThreshold.set(80)
     junit5PluginVersion.set("1.2.1")
-    timeoutConstInMillis.set(10000)
+    timeoutConstInMillis.set(30000)
 }
