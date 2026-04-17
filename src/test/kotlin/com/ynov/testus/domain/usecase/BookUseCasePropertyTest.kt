@@ -4,6 +4,7 @@ import com.ynov.testus.domain.model.Book
 import com.ynov.testus.domain.port.BookRepository
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
@@ -53,6 +54,17 @@ class BookUseCasePropertyTest : FunSpec({
             val res = bookUseCase.getAllBooks()
 
             res.map { it.title } shouldContainExactly titles.sorted()
+        }
+    }
+
+    test("a reserved book should always be marked as reserved") {
+        checkAll(Arb.stringPattern("""[a-z]{1,10}""")) { title ->
+            bookRepository.clear()
+            bookUseCase.addBook(Book(title, "Victor Hugo"))
+            bookUseCase.reserveBook(title)
+
+            val res = bookUseCase.getAllBooks()
+            res.first { it.title == title }.reserved shouldBe true
         }
     }
 })
